@@ -9,6 +9,10 @@ This is a template for building new rails 5 applications with my defaults. It us
 - neat
 - font-aweseom-rails
 - rspec
+- factory_girl
+- capistrano
+- twitter-bootstrap v4?
+
 
 ## Generators
 
