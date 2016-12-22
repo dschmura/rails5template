@@ -5,6 +5,7 @@
 gem 'haml-rails'
 gem 'bourbon'
 gem 'neat', '~> 1.8'
+gem 'bitters'
 gem 'normalize-rails'
 gem 'font-awesome-rails'
 
@@ -36,8 +37,9 @@ gem_group :development do
   gem "erb2haml"
 end
 rails_command("haml:replace_erbs")
-generate(:controller, "Pages index about contact")
+generate(:controller, "Pages index about contact privacy")
 route "root to: 'pages#index'"
+rails_command("db:create")
 rails_command("db:migrate")
 
 # Bundle and set up RSpec
@@ -48,7 +50,8 @@ run "mkdir spec/models"
 run "mkdir spec/controllers"
 run "mkdir spec/features"
 run "touch spec/factories.rb"
-run "bourbon install"
+run "bourbon install --path app/assets/stylesheets/"
+run "bitters install --path app/assets/stylesheets/"
 # Inject into the factory girl files
 append_to_file "spec/factories.rb" do
   "FactoryGirl.define do\nend"
@@ -81,14 +84,20 @@ run "mv app/assets/stylesheets/application.css app/assets/stylesheets/applicatio
 run "touch app/assets/stylesheets/custom.css.sass"
 gsub_file('app/assets/stylesheets/application.css.scss',  '*= require_tree .', '')
 
-
+insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper" do <<-EOF
+  
+  def site_name
+    @site_name = ''
+    @site_name = @site_name || Rails.application.class.parent_name.gsub(/[A-Z]/)  { |c| \" \#{c} \"} 
+  end
+  EOF
+end
 insert_into_file 'app/assets/stylesheets/application.css.scss', after: "*/\n" do
   "\n@charset 'utf-8';
   \n@import 'normalize-rails';
   \n@import 'bourbon';
   \n@import 'neat';
-  \n@import 'base/base';
-  \n@import 'refills/flashes';"
+  \n@import 'base/base';"
   end
 
 # Create and link partials for header and footer
@@ -118,18 +127,27 @@ create_file "app/views/layouts/_footer.html.haml" do
 end
 
 insert_into_file 'app/views/layouts/application.html.haml', after: "%body" do
-  "\n  = render 'header'"
+  "{:class => controller.controller_name}\n    = render 'layouts/header'\n    .content#content"
+end
+insert_into_file 'app/views/layouts/application.html.haml', before: "= yield" do <<-'EOF'
+
+  EOF
 end
 insert_into_file 'app/views/layouts/application.html.haml', after: "= yield" do
-  "\n  = render 'footer'"
+  "\n    = render 'layouts/footer'"
 end
 
+insert_into_file 'app/views/layouts/application.html.haml', after: "title" do 
+  ""
+end
 
-capify!
+run "subl ."
+run "cap install"
+
 after_bundle do
 
   git :init
   git add: "."
   git commit: %Q{ -m 'Initial commit' }
-  run "subl ."
+  
 end
