@@ -1,11 +1,21 @@
 # template.rb
 
+if yes? 'Do you wish to use bootstrap? (y/n)'
+  use_bootstrap = true
+end
+if yes? 'Do you wish to use devise? (y/n)'
+  use_devise = true
+end
 
+if yes? 'Do you wish to use bourbon? (y/n)'
+  use_bourbon = true
+end
+
+if yes? 'Do you wish to use neat? (y/n)'
+  user_neat = true
+end
 
 gem 'haml-rails'
-gem 'bourbon'
-gem 'neat', '~> 1.8'
-gem 'bitters'
 gem 'normalize-rails'
 gem 'font-awesome-rails'
 
@@ -34,6 +44,7 @@ gem_group :development do
   gem 'capistrano-postgresql', '~> 4.2.0'
   gem 'capistrano-rvm'
   gem 'capistrano-passenger'
+  gem 'guard-rails'
   gem "erb2haml"
 end
 rails_command("haml:replace_erbs")
@@ -50,8 +61,72 @@ run "mkdir spec/models"
 run "mkdir spec/controllers"
 run "mkdir spec/features"
 run "touch spec/factories.rb"
-run "bourbon install --path app/assets/stylesheets/"
-run "bitters install --path app/assets/stylesheets/"
+
+if use_bootstrap
+  gem 'bootstrap', '~> 4.0.0.alpha6'
+  insert_into_file "app/helpers/application_helper.rb", after: "ApplicationHelper\n" do
+    <<-APPHELPER
+  def bootstrap_class_for flash_type
+    { success: "alert-success", error: "alert-error", alert: "alert-warning", notice: "alert-info" }[flash_type.to_sym] || flash_type.to_s
+  end
+
+  def flash_messages(opts = {})
+    flash.each do |msg_type, message|
+      concat(content_tag(:div, message, class: "alert \#{bootstrap_class_for(msg_type)} fade in") do 
+        concat content_tag(:button, 'x', class: "close", data: { dismiss: 'alert' })
+          concat message 
+      end)
+    end
+    nil
+  end
+
+  APPHELPER
+  end
+
+  append_to_file "app/assets/javascripts/application.js", <<-ACTIVE_HEADER
+    $(document).on('turbolinks:load', function() {
+      setNavigation();
+    });
+
+    function setNavigation() {
+      var path = window.location.pathname;
+      path = path.replace(/\/$/, "");
+      path = decodeURIComponent(path);
+      var elemental = $("header .navbar-nav li a");
+      elemental.each(function() {
+        var href = $(this).attr('href');
+        if (path.substring(0, href.length) === href) {
+            $(this).closest('a').addClass('active');
+        }
+    });
+  }
+  ACTIVE_HEADER
+end
+
+if use_devise
+  gem 'devise'
+  run 'rails generate devise:install'
+  insert_into_file "config/environments/development.rb", after: "Rails.application.configure do\n" do 
+    "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }"
+  end
+end
+
+if use_bourbon
+  gem 'bourbon'
+  gem 'neat', '~> 1.8'
+  gem 'bitters'
+  run "bourbon install --path app/assets/stylesheets/"
+  run "bitters install --path app/assets/stylesheets/"
+
+  insert_into_file 'app/assets/stylesheets/application.css.scss', after: "*/\n" do
+  "\n@charset 'utf-8';
+  \n@import 'normalize-rails';
+  \n@import 'bourbon';
+  \n@import 'neat';
+  \n@import 'base/base';"
+  end
+end
+
 # Inject into the factory girl files
 append_to_file "spec/factories.rb" do
   "FactoryGirl.define do\nend"
@@ -92,13 +167,7 @@ insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper"
   end
   EOF
 end
-insert_into_file 'app/assets/stylesheets/application.css.scss', after: "*/\n" do
-  "\n@charset 'utf-8';
-  \n@import 'normalize-rails';
-  \n@import 'bourbon';
-  \n@import 'neat';
-  \n@import 'base/base';"
-  end
+
 
 # Create and link partials for header and footer
 create_file "app/views/layouts/_header.html.haml" do 
@@ -129,10 +198,7 @@ end
 insert_into_file 'app/views/layouts/application.html.haml', after: "%body" do
   "{:class => controller.controller_name}\n    = render 'layouts/header'\n    .content#content"
 end
-insert_into_file 'app/views/layouts/application.html.haml', before: "= yield" do <<-'EOF'
 
-  EOF
-end
 insert_into_file 'app/views/layouts/application.html.haml', after: "= yield" do
   "\n    = render 'layouts/footer'"
 end
