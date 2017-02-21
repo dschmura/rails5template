@@ -195,7 +195,7 @@ insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper"
 
   def site_name
     @site_name = nil
-    @site_name = @site_name || Rails.application.class.parent_name.gsub(/[A-Z]/)  { |c| \" \#{c} \"}
+    @site_name = @site_name || Rails.application.class.parent_name.titleize
   end
   EOF
 end
