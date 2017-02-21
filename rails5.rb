@@ -19,6 +19,7 @@ gem 'haml-rails'
 gem 'normalize-rails'
 gem 'font-awesome-rails'
 
+
 gem_group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
@@ -45,7 +46,9 @@ gem_group :development do
   gem 'capistrano-rvm'
   gem 'capistrano-passenger'
   gem 'guard-rails'
-  gem "erb2haml"
+  gem 'erb2haml'
+  gem 'pry'
+  gem 'pry-rails'
 end
 rails_command("haml:replace_erbs")
 generate(:controller, "Pages index about contact privacy")
@@ -62,8 +65,20 @@ run "mkdir spec/controllers"
 run "mkdir spec/features"
 run "touch spec/factories.rb"
 
+# Set up for scss and bootstrap
+run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.css.scss"
+run "touch app/assets/stylesheets/custom.css.sass"
+gsub_file('app/assets/stylesheets/application.css.scss',  '*= require_tree .', '')
+
+
 if use_bootstrap
   gem 'bootstrap', '~> 4.0.0.alpha6'
+  append_to_file 'Gemfile', <<-TETHER_GEM
+\n# Bootstrap Tooltips and popovers depend on tether for positioning. If you use them, add tether to the Gemfile:
+source 'https://rails-assets.org' do
+  gem 'rails-assets-tether', '>= 1.1.0'
+end
+  TETHER_GEM
   insert_into_file "app/helpers/application_helper.rb", after: "ApplicationHelper\n" do
     <<-APPHELPER
   def bootstrap_class_for flash_type
@@ -82,13 +97,16 @@ if use_bootstrap
 
   APPHELPER
   end
+  insert_into_file "app/assets/javascripts/application.js", after: "//= require jquery\n" do
+    "\n//= require tether\n//= require bootstrap\n"
+  end 
 
   append_to_file "app/assets/javascripts/application.js", <<-ACTIVE_HEADER
     $(document).on('turbolinks:load', function() {
-      setNavigation();
+      setActiveLink();
     });
 
-    function setNavigation() {
+    function setActiveLink() {
       var path = window.location.pathname;
       path = path.replace(/\/$/, "");
       path = decodeURIComponent(path);
@@ -101,6 +119,17 @@ if use_bootstrap
     });
   }
   ACTIVE_HEADER
+
+  insert_into_file "app/assets/stylesheets/application.css.scss", after: " */\n" do
+    "@charset 'utf-8';
+    \n@import 'normalize-rails';
+    \n@import 'font-awesome';"
+  end
+
+  append_to_file "app/assets/stylesheets/application.css.scss", <<-BOOTSTRAP_STYLE
+  // Custom bootstrap variables must be set or imported before bootstrap itself.
+@import "bootstrap";
+BOOTSTRAP_STYLE
 end
 
 if use_devise
@@ -154,34 +183,36 @@ append_to_file "spec/rails_helper.rb" do
   "\nShoulda::Matchers.configure do |config|\n  config.integrate do |with|\n    with.test_framework :rspec\n    with.library :rails\n  end\nend"
 end
 
-# Set up for scss and bootstrap
-run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.css.scss"
-run "touch app/assets/stylesheets/custom.css.sass"
-gsub_file('app/assets/stylesheets/application.css.scss',  '*= require_tree .', '')
 
 insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper" do <<-EOF
   
   def site_name
-    @site_name = ''
+    @site_name = nil
     @site_name = @site_name || Rails.application.class.parent_name.gsub(/[A-Z]/)  { |c| \" \#{c} \"} 
   end
   EOF
 end
 
 
-# Create and link partials for header and footer
-create_file "app/views/layouts/_header.html.haml" do 
-  <<-EOF
-
+if use_bootstrap 
+  # Create and link partials for header and footer
+  create_file "app/views/layouts/_header.html.haml" do 
+  <<-BOOTSTRAP_HEADER
 %header
-  %nav
-    %ul 
-      %li 
-      %li
-      %li
-  EOF
+  %nav.navbar.navbar-toggleable-md.navbar-inverse.fixed-top.bg-inverse
+    %button.navbar-toggler.navbar-toggler-right{"aria-controls" => "headerNavBar", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#headerNavBar", "data-toggle" => "collapse", :type => "button"}
+      %span.navbar-toggler-icon
+    = link_to site_name, root_path, class:"navbar-brand"
+    #headerNavBar.collapse.navbar-collapse
+      %ul.navbar-nav.ml-auto
+        %li.nav-item= link_to "About", pages_about_path, class:"nav-link"
+        %li.nav-item= link_to "Contact Us", pages_contact_path, class:"nav-link"
+        %li.nav-item=link_to "Privacy", pages_privacy_path, class:"nav-link"
+    BOOTSTRAP_HEADER
+  end
+else
+  puts "NO"
 end
-
 
 create_file "app/views/layouts/_footer.html.haml" do 
   <<-EOF
