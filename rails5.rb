@@ -11,9 +11,9 @@ if yes? 'Do you wish to use bourbon? (y/n)'
   use_bourbon = true
 end
 
-if yes? 'Do you wish to use neat? (y/n)'
-  user_neat = true
-end
+# if yes? 'Do you wish to use neat? (y/n)'
+#   use_neat = true
+# end
 
 gem 'haml-rails'
 gem 'normalize-rails'
@@ -74,6 +74,34 @@ run "touch app/assets/stylesheets/custom.css.sass"
 gsub_file('app/assets/stylesheets/application.css.scss',  '*= require_tree .', '')
 
 
+if use_devise
+  gem 'devise'
+  run 'rails generate devise:install'
+  insert_into_file "config/environments/development.rb", after: "Rails.application.configure do\n" do
+    "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }"
+  end
+end
+
+if use_bourbon
+
+  # run "bourbon install --path app/assets/stylesheets/"
+  # run "bitters install --path app/assets/stylesheets/"
+
+  insert_into_file 'app/assets/stylesheets/application.css.scss', after: "*/\n" do
+  # "\n@charset 'utf-8';
+  # \n@import 'normalize-rails';
+  "\n@import 'bourbon';
+   \n@import 'neat';"
+  # \n@import 'base/base';
+  end
+
+  append_to_file 'Gemfile' do
+    "\ngem 'bourbon'
+    \ngem 'neat', '~> 1.8'
+    \ngem 'bitters'"
+  end
+end
+
 if use_bootstrap
   gem 'bootstrap', '~> 4.0.0.alpha6'
   append_to_file 'Gemfile', <<-TETHER_GEM
@@ -133,30 +161,6 @@ end
   // Custom bootstrap variables must be set or imported before bootstrap itself.
 @import "bootstrap";
 BOOTSTRAP_STYLE
-end
-
-if use_devise
-  gem 'devise'
-  run 'rails generate devise:install'
-  insert_into_file "config/environments/development.rb", after: "Rails.application.configure do\n" do
-    "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }"
-  end
-end
-
-if use_bourbon
-  gem 'bourbon'
-  gem 'neat', '~> 1.8'
-  gem 'bitters'
-  run "bourbon install --path app/assets/stylesheets/"
-  run "bitters install --path app/assets/stylesheets/"
-
-  insert_into_file 'app/assets/stylesheets/application.css.scss', after: "*/\n" do
-  "\n@charset 'utf-8';
-  \n@import 'normalize-rails';
-  \n@import 'bourbon';
-  \n@import 'neat';
-  \n@import 'base/base';"
-  end
 end
 
 # Inject into the factory girl files
