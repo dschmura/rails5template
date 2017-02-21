@@ -45,6 +45,9 @@ gem_group :development do
   gem 'capistrano-postgresql', '~> 4.2.0'
   gem 'capistrano-rvm'
   gem 'capistrano-passenger'
+  # Invoke rake tasks on remote server.
+  # example use: cap staging    invoke:rake TASK=db:seed
+  gem 'capistrano-rake', require: false
   gem 'guard-rails'
   gem 'erb2haml'
   gem 'pry'
@@ -87,9 +90,9 @@ end
 
   def flash_messages(opts = {})
     flash.each do |msg_type, message|
-      concat(content_tag(:div, message, class: "alert \#{bootstrap_class_for(msg_type)} fade in") do 
+      concat(content_tag(:div, message, class: "alert \#{bootstrap_class_for(msg_type)} fade in") do
         concat content_tag(:button, 'x', class: "close", data: { dismiss: 'alert' })
-          concat message 
+          concat message
       end)
     end
     nil
@@ -99,7 +102,7 @@ end
   end
   insert_into_file "app/assets/javascripts/application.js", after: "//= require jquery\n" do
     "\n//= require tether\n//= require bootstrap\n"
-  end 
+  end
 
   append_to_file "app/assets/javascripts/application.js", <<-ACTIVE_HEADER
     $(document).on('turbolinks:load', function() {
@@ -135,7 +138,7 @@ end
 if use_devise
   gem 'devise'
   run 'rails generate devise:install'
-  insert_into_file "config/environments/development.rb", after: "Rails.application.configure do\n" do 
+  insert_into_file "config/environments/development.rb", after: "Rails.application.configure do\n" do
     "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }"
   end
 end
@@ -185,18 +188,18 @@ end
 
 
 insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper" do <<-EOF
-  
+
   def site_name
     @site_name = nil
-    @site_name = @site_name || Rails.application.class.parent_name.gsub(/[A-Z]/)  { |c| \" \#{c} \"} 
+    @site_name = @site_name || Rails.application.class.parent_name.gsub(/[A-Z]/)  { |c| \" \#{c} \"}
   end
   EOF
 end
 
 
-if use_bootstrap 
+if use_bootstrap
   # Create and link partials for header and footer
-  create_file "app/views/layouts/_header.html.haml" do 
+  create_file "app/views/layouts/_header.html.haml" do
   <<-BOOTSTRAP_HEADER
 %header
   %nav.navbar.navbar-toggleable-md.navbar-inverse.fixed-top.bg-inverse
@@ -214,13 +217,13 @@ else
   puts "NO"
 end
 
-create_file "app/views/layouts/_footer.html.haml" do 
+create_file "app/views/layouts/_footer.html.haml" do
   <<-EOF
 
 %footer
   %nav
-    %ul 
-      %li 
+    %ul
+      %li
       %li
       %li
   EOF
@@ -234,7 +237,7 @@ insert_into_file 'app/views/layouts/application.html.haml', after: "= yield" do
   "\n    = render 'layouts/footer'"
 end
 
-insert_into_file 'app/views/layouts/application.html.haml', after: "title" do 
+insert_into_file 'app/views/layouts/application.html.haml', after: "title" do
   ""
 end
 
@@ -246,5 +249,5 @@ after_bundle do
   git :init
   git add: "."
   git commit: %Q{ -m 'Initial commit' }
-  
+
 end
