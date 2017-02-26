@@ -10,11 +10,7 @@ end
 if yes? 'Do you wish to use bourbon? (y/n)'
   use_bourbon = true
 end
-
-# if yes? 'Do you wish to use neat? (y/n)'
-#   use_neat = true
-# end
-
+# gem 'haml', '~> 5.0.0.beta.2'
 gem 'haml-rails'
 gem 'normalize-rails'
 gem 'font-awesome-rails'
@@ -53,6 +49,7 @@ gem_group :development do
   gem 'pry'
   gem 'pry-rails'
 end
+run "bundle install"
 rails_command("haml:replace_erbs")
 generate(:controller, "Pages index about contact privacy")
 route "root to: 'pages#index'"
@@ -60,7 +57,7 @@ rails_command("db:create")
 rails_command("db:migrate")
 
 # Bundle and set up RSpec
-run "bundle install"
+
 run "rails generate rspec:install"
 # Set up the spec folders for RSpec
 run "mkdir spec/models"
@@ -214,9 +211,11 @@ if use_bootstrap
       %ul.navbar-nav.ml-auto
         %li.nav-item= link_to "About", pages_about_path, class:"nav-link"
         %li.nav-item= link_to "Contact Us", pages_contact_path, class:"nav-link"
-        %li.nav-item=link_to "Privacy", pages_privacy_path, class:"nav-link"
+        %li.nav-item= link_to "Privacy", pages_privacy_path, class:"nav-link"
     BOOTSTRAP_HEADER
   end
+
+
 else
   puts "NO"
 end
