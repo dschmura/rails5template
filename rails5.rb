@@ -30,7 +30,7 @@ gem_group :development, :test do
 end
 
 gem_group :test do
-  gem 'shoulda-matchers', require: false
+  gem 'shoulda-matchers'
   gem 'ffaker'
   gem 'capybara'
   ## These are reccomended in the 'Everyday Rails Testing with RSPEC'
