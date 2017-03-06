@@ -82,9 +82,9 @@ run "mkdir spec/features"
 run "touch spec/factories.rb"
 
 # Set up for scss and bootstrap
-run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.css.scss"
-run "touch app/assets/stylesheets/custom.css.sass"
-gsub_file('app/assets/stylesheets/application.css.scss',  '*= require_tree .', '')
+run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss"
+run "touch app/assets/stylesheets/custom.sass"
+gsub_file('app/assets/stylesheets/application.scss',  '*= require_tree .', '')
 
 
 if use_devise
@@ -100,7 +100,7 @@ if use_bourbon
   # run "bourbon install --path app/assets/stylesheets/"
   # run "bitters install --path app/assets/stylesheets/"
 
-  insert_into_file 'app/assets/stylesheets/application.css.scss', after: "*/\n" do
+  insert_into_file 'app/assets/stylesheets/application.scss', after: "*/\n" do
   # "\n@charset 'utf-8';
   # \n@import 'normalize-rails';
   "\n@import 'bourbon';
@@ -164,13 +164,13 @@ end
   }
   ACTIVE_HEADER
 
-  insert_into_file "app/assets/stylesheets/application.css.scss", after: " */\n" do
+  insert_into_file "app/assets/stylesheets/application.scss", after: " */\n" do
     "@charset 'utf-8';
     \n@import 'normalize-rails';
     \n@import 'font-awesome';"
   end
 
-  append_to_file "app/assets/stylesheets/application.css.scss", <<-BOOTSTRAP_STYLE
+  append_to_file "app/assets/stylesheets/application.scss", <<-BOOTSTRAP_STYLE
   // Custom bootstrap variables must be set or imported before bootstrap itself.
 @import "bootstrap";
 BOOTSTRAP_STYLE
