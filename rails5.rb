@@ -10,6 +10,11 @@ end
 if yes? 'Do you wish to use bourbon? (y/n)'
   use_bourbon = true
 end
+
+if yes? 'Do you wish to use guard? (y/n)'
+  use_guard = true
+end
+
 # gem 'haml', '~> 5.0.0.beta.2'
 gem 'haml-rails'
 gem 'normalize-rails'
@@ -44,12 +49,23 @@ gem_group :development do
   # Invoke rake tasks on remote server.
   # example use: cap staging    invoke:rake TASK=db:seed
   gem 'capistrano-rake', require: false
-  gem 'guard-rails'
   gem 'erb2haml'
   gem 'pry'
   gem 'pry-rails'
 end
+
+if use_guard
+  gem 'guard-rails', group: :development
+  gem 'guard-rspec', require: false, group: :development
+  gem 'guard-livereload', group: :development
+end
+
 run "bundle install"
+
+if use_guard
+  run 'bundle exec guard init'
+end
+
 rails_command("haml:replace_erbs")
 generate(:controller, "Pages index about contact privacy")
 route "root to: 'pages#index'"
