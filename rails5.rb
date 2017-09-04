@@ -1,8 +1,43 @@
 # template.rb
 
+def source_paths
+  Array(super) + [File.join(File.expand_path(File.dirname(__FILE__)),'recipes')]
+end
+def template_with_env filename
+  if ENV['LOCAL']
+    "/Users/dschmura/code/Rails/TEMPLATES/rails5template/recipes" + filename
+  else
+    "http://github.com/smartlogic/rails-templates/raw/master/" + filename
+  end
+end
+
+# Loads templates from the recipes/ directory (located in the same directory as this template).
+# This allows us to load templates in the form: load_template('rails_flash_messages.rb')
+def load_template(template)
+  begin
+    template = File.join(File.dirname(__FILE__), "/recipes/#{template}")
+    code = open(template).read
+    in_root { self.instance_eval(code) }
+  rescue LoadError, Errno::ENOENT => e
+    raise "The template [#{template}] could not be loaded. Error: #{e}"
+    end
+end
+
+# All apps get flash messages
+load_template('rails_flash_messages.rb')
+
+
 if yes? 'Do you wish to use bootstrap? (y/n)'
   use_bootstrap = true
 end
+if yes? 'Do you wish to use capistrano? (y/n)'
+  use_capistrano = true
+end
+
+if yes? 'Generate a favicon? (y/n)'
+  create_favicon = true
+end
+
 if yes? 'Do you wish to use devise? (y/n)'
   use_devise = true
 end
@@ -13,6 +48,9 @@ end
 
 if yes? 'Do you wish to use guard? (y/n)'
   use_guard = true
+end
+if yes? 'Do you wish to include a mailer? (y/n)'
+  use_mailer = true
 end
 
 # gem 'haml', '~> 5.0.0.beta.2'
@@ -55,16 +93,17 @@ gem_group :development do
 end
 
 if use_guard
-  gem 'guard-rails', group: :development
-  gem 'guard-rspec', require: false, group: :development
-  gem 'guard-livereload', group: :development
+  load_template('use_guard.rb')
 end
 
-run "bundle install"
-
-if use_guard
-  run 'bundle exec guard init'
+if create_favicon
+  load_template('create_favicon.rb')
 end
+
+if use_mailer
+  load_template('use_mailer.rb')
+end
+
 
 rails_command("haml:replace_erbs")
 generate(:controller, "Pages index about contact privacy")
@@ -81,100 +120,11 @@ run "mkdir spec/controllers"
 run "mkdir spec/features"
 run "touch spec/factories.rb"
 
-# Set up for scss and bootstrap
+# Set up for scss
 run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss"
 run "touch app/assets/stylesheets/custom.sass"
 gsub_file('app/assets/stylesheets/application.scss',  '*= require_tree .', '')
 
-
-if use_devise
-  gem 'devise'
-  run 'rails generate devise:install'
-  insert_into_file "config/environments/development.rb", after: "Rails.application.configure do\n" do
-    "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }"
-  end
-end
-
-if use_bourbon
-
-  # run "bourbon install --path app/assets/stylesheets/"
-  # run "bitters install --path app/assets/stylesheets/"
-
-  insert_into_file 'app/assets/stylesheets/application.scss', after: "*/\n" do
-  # "\n@charset 'utf-8';
-  # \n@import 'normalize-rails';
-  "\n@import 'bourbon';
-   \n@import 'neat';"
-  # \n@import 'base/base';
-  end
-
-  append_to_file 'Gemfile' do
-    "\ngem 'bourbon'
-    \ngem 'neat', '~> 1.8'
-    \ngem 'bitters'"
-  end
-end
-
-if use_bootstrap
-  gem 'bootstrap', '~> 4.0.0.alpha6'
-  append_to_file 'Gemfile', <<-TETHER_GEM
-\n# Bootstrap Tooltips and popovers depend on tether for positioning. If you use them, add tether to the Gemfile:
-source 'https://rails-assets.org' do
-  gem 'rails-assets-tether', '>= 1.1.0'
-end
-  TETHER_GEM
-  insert_into_file "app/helpers/application_helper.rb", after: "ApplicationHelper\n" do
-    <<-APPHELPER
-  def bootstrap_class_for flash_type
-    { success: "alert-success", error: "alert-error", alert: "alert-warning", notice: "alert-info" }[flash_type.to_sym] || flash_type.to_s
-  end
-
-  def flash_messages(opts = {})
-    flash.each do |msg_type, message|
-      concat(content_tag(:div, message, class: "alert \#{bootstrap_class_for(msg_type)} fade in") do
-        concat content_tag(:button, 'x', class: "close", data: { dismiss: 'alert' })
-          concat message
-      end)
-    end
-    nil
-  end
-
-  APPHELPER
-  end
-  insert_into_file "app/assets/javascripts/application.js", after: "//= require jquery\n" do
-    "\n//= require tether\n//= require bootstrap\n"
-  end
-
-  append_to_file "app/assets/javascripts/application.js", <<-ACTIVE_HEADER
-    $(document).on('turbolinks:load', function() {
-      setActiveLink();
-    });
-
-    function setActiveLink() {
-      var path = window.location.pathname;
-      path = path.replace(/\/$/, "");
-      path = decodeURIComponent(path);
-      var elemental = $("header .navbar-nav li a");
-      elemental.each(function() {
-        var href = $(this).attr('href');
-        if (path.substring(0, href.length) === href) {
-            $(this).closest('a').addClass('active');
-        }
-    });
-  }
-  ACTIVE_HEADER
-
-  insert_into_file "app/assets/stylesheets/application.scss", after: " */\n" do
-    "@charset 'utf-8';
-    \n@import 'normalize-rails';
-    \n@import 'font-awesome';"
-  end
-
-  append_to_file "app/assets/stylesheets/application.scss", <<-BOOTSTRAP_STYLE
-  // Custom bootstrap variables must be set or imported before bootstrap itself.
-@import "bootstrap";
-BOOTSTRAP_STYLE
-end
 
 # Inject into the factory girl files
 append_to_file "spec/factories.rb" do
@@ -204,6 +154,7 @@ append_to_file "spec/rails_helper.rb" do
 end
 
 
+# Set up SiteName Helper
 insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper" do <<-EOF
 
   def site_name
@@ -214,27 +165,6 @@ insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper"
 end
 
 
-if use_bootstrap
-  # Create and link partials for header and footer
-  create_file "app/views/layouts/_header.html.haml" do
-  <<-BOOTSTRAP_HEADER
-%header
-  %nav.navbar.navbar-toggleable-md.navbar-inverse.fixed-top.bg-inverse
-    %button.navbar-toggler.navbar-toggler-right{"aria-controls" => "headerNavBar", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#headerNavBar", "data-toggle" => "collapse", :type => "button"}
-      %span.navbar-toggler-icon
-    = link_to site_name, root_path, class:"navbar-brand"
-    #headerNavBar.collapse.navbar-collapse
-      %ul.navbar-nav.ml-auto
-        %li.nav-item= link_to "About", pages_about_path, class:"nav-link"
-        %li.nav-item= link_to "Contact Us", pages_contact_path, class:"nav-link"
-        %li.nav-item= link_to "Privacy", pages_privacy_path, class:"nav-link"
-    BOOTSTRAP_HEADER
-  end
-
-
-else
-  puts "NO"
-end
 
 create_file "app/views/layouts/_footer.html.haml" do
   <<-EOF
@@ -248,6 +178,23 @@ create_file "app/views/layouts/_footer.html.haml" do
   EOF
 end
 
+if use_bourbon
+  load_template('use_bourbon.rb')
+end
+
+if use_bootstrap
+  load_template('use_bootstrap.rb')
+end
+
+if use_devise
+  load_template('use_devise.rb')
+end
+
+if use_capistrano
+  load_template('use_capistrano.rb')
+end
+
+# Add a class for the name of the controller.
 insert_into_file 'app/views/layouts/application.html.haml', after: "%body" do
   "{:class => controller.controller_name}\n    = render 'layouts/header'\n    .content#content"
 end
@@ -260,8 +207,22 @@ insert_into_file 'app/views/layouts/application.html.haml', after: "title" do
   ""
 end
 
+
+##Configure Shoulda-matchers for Rails 5 compatability
+insert_into_file 'spec/rails_helper.rb', after: "require 'rspec/rails'" do
+<<-SHOULDA
+
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
+end
+SHOULDA
+end
+
 run "subl ."
-run "cap install"
+
 
 after_bundle do
 
