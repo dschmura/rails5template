@@ -1,0 +1,3 @@
+
+
+run 'cap install'
