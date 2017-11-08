@@ -126,13 +126,13 @@ run "touch app/assets/stylesheets/custom.sass"
 gsub_file('app/assets/stylesheets/application.scss',  '*= require_tree .', '')
 
 
-# Inject into the factory girl files
+# Inject into the factory bot files
 append_to_file "spec/factories.rb" do
-  "FactoryGirl.define do\nend"
+  "FactoryBot.define do\nend"
 end
 
 insert_into_file "spec/rails_helper.rb", after: "RSpec.configure do |config|\n" do
-  "  config.include FactoryGirl::Syntax::Methods\n"
+  "  config.include FactoryBot::Syntax::Methods\n"
 end
 
 # Set up Database Cleaner
