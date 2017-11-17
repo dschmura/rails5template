@@ -125,7 +125,6 @@ run "mv app/assets/stylesheets/application.css app/assets/stylesheets/applicatio
 run "touch app/assets/stylesheets/custom.sass"
 gsub_file('app/assets/stylesheets/application.scss',  '*= require_tree .', '')
 
-
 # Inject into the factory bot files
 append_to_file "spec/factories.rb" do
   "FactoryBot.define do\nend"
@@ -207,6 +206,16 @@ insert_into_file 'app/views/layouts/application.html.haml', after: "title" do
   ""
 end
 
+# Add alt message reminder
+append_to_file "app/assets/stylesheets/application.scss" do
+  <<-EOF
+
+// You Forgot The Alt Message
+img[alt=""], img:not([alt]) {
+  border: 5px dashed #c00;
+}
+  EOF
+end
 
 ##Configure Shoulda-matchers for Rails 5 compatability
 insert_into_file 'spec/rails_helper.rb', after: "require 'rspec/rails'" do
