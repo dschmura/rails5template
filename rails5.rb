@@ -101,7 +101,7 @@ if create_favicon
 end
 
 if use_mailer
-  load_template('use_mailer.rb')
+  load_template('use_feedback_mailer.rb')
 end
 
 
