@@ -100,10 +100,6 @@ if create_favicon
   load_template('create_favicon.rb')
 end
 
-if use_mailer
-  load_template('use_feedback_mailer.rb')
-end
-
 
 rails_command("haml:replace_erbs")
 generate(:controller, "Pages index about contact privacy")
@@ -192,6 +188,11 @@ end
 if use_capistrano
   load_template('use_capistrano.rb')
 end
+
+if use_mailer
+  load_template('use_feedback_mailer.rb')
+end
+
 
 # Add a class for the name of the controller.
 insert_into_file 'app/views/layouts/application.html.haml', after: "%body" do
