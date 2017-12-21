@@ -1,5 +1,6 @@
   gem 'bootstrap', '~> 4.0.0.beta2.1'
-  gem 'popper_js', '~> 1.12.3'
+  gem 'popper_js'
+  gem 'jquery-rails'
 
   insert_into_file "app/helpers/application_helper.rb", after: "ApplicationHelper\n" do
     <<-APPHELPER
@@ -19,8 +20,8 @@
 
   APPHELPER
   end
-  insert_into_file "app/assets/javascripts/application.js", after: "//= require jquery\n" do
-    "\n//= require tether\n//= require bootstrap\n"
+  insert_into_file "app/assets/javascripts/application.js", after: "// about supported directives.\n//\n" do
+    "\n//= require jquery2\n//= require popper\n//= require bootstrap\n"
   end
 
   append_to_file "app/assets/javascripts/application.js", <<-ACTIVE_HEADER
@@ -83,5 +84,3 @@ create_file "app/views/layouts/_header.html.haml" do
   #   end
   # end
 end
-
-
