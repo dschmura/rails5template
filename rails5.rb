@@ -173,6 +173,28 @@ create_file "app/views/layouts/_footer.html.haml" do
   EOF
 end
 
+# ADD SET_ACTIVE_LINK JS TO APPLICATION.JS
+append_to_file "app/assets/javascripts/application.js", <<-ACTIVE_HEADER
+$(document).on("turbolinks:load", function() {
+  setActiveLink();
+});
+
+  function setActiveLink() {
+    var path = window.location.pathname;
+    path = path.replace("\/$/", "");
+    path = decodeURIComponent(path);
+    var elemental = $("header .navbar-nav li a");
+    elemental.each(function() {
+      var href = $(this).attr('href');
+      if (path.substring(0, href.length) === href) {
+          $(this).closest('a').addClass('active');
+      }
+  });
+}
+
+ACTIVE_HEADER
+
+
 if use_bourbon
   load_template('use_bourbon.rb')
 end
