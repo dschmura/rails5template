@@ -173,6 +173,7 @@ create_file "app/views/layouts/_footer.html.haml" do
   EOF
 end
 
+# ADD SET_ACTIVE_LINK JS TO APPLICATION.JS
 if use_bourbon
   load_template('use_bourbon.rb')
 end
