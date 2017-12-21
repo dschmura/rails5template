@@ -24,24 +24,7 @@
     "\n//= require jquery2\n//= require popper\n//= require bootstrap\n"
   end
 
-  append_to_file "app/assets/javascripts/application.js", <<-ACTIVE_HEADER
-    $(document).on('turbolinks:load', function() {
-      setActiveLink();
-    });
 
-    function setActiveLink() {
-      var path = window.location.pathname;
-      path = path.replace(/\/$/, "");
-      path = decodeURIComponent(path);
-      var elemental = $("header .navbar-nav li a");
-      elemental.each(function() {
-        var href = $(this).attr('href');
-        if (path.substring(0, href.length) === href) {
-            $(this).closest('a').addClass('active');
-        }
-    });
-  }
-  ACTIVE_HEADER
 
   insert_into_file "app/assets/stylesheets/application.scss", after: " */\n" do
     "@charset 'utf-8';
