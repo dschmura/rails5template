@@ -174,6 +174,7 @@ create_file "app/views/layouts/_footer.html.haml" do
 end
 
 # ADD SET_ACTIVE_LINK JS TO APPLICATION.JS
+<<<<<<< HEAD
 append_to_file "app/assets/javascripts/application.js", <<-ACTIVE_HEADER
 $(document).on("turbolinks:load", function() {
   setActiveLink();
@@ -195,6 +196,8 @@ $(document).on("turbolinks:load", function() {
 ACTIVE_HEADER
 
 
+=======
+>>>>>>> 9aeadbb2634e19e82d7e252d8b759cfe6c29392c
 if use_bourbon
   load_template('use_bourbon.rb')
 end
