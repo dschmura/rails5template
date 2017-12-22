@@ -1,9 +1,9 @@
-## Setup letter_opener for development
+# SETUP LETTER_OPENER FOR DEVELOPMENT
 gem_group :development, :test do
   gem 'letter_opener'
 end
 
-insert_into_file 'config/environments/development.rb', after: 'Rails.application.configure do' do
+insert_into_file 'config/environments/development.rb', after: 'Rails.application.configure do\n' do
   <<-LETTER_OPENER
   # Support for letter_opener
     config.action_mailer.delivery_method = :letter_opener
@@ -12,21 +12,12 @@ insert_into_file 'config/environments/development.rb', after: 'Rails.application
   LETTER_OPENER
 end
 
+# CREATE MODEL TO HANDLE VALIDATIONS
 rails_command("g model Feedback --skip-migration")
-
-create_file 'config/initializers/mailer_setup.rb' do
-  <<-ACTION_MAILER_SETUP
-  ActionMailer::Base.delivery_method = :smtp
-  ActionMailer::Base.smtp_settings = {
-      :address              => "localhost",
-      :enable_starttls_auto => false
-  }
-  ACTION_MAILER_SETUP
-end
 
 gsub_file('app/models/feedback.rb',  'class Feedback < ApplicationRecord', 'class Feedback')
 
-insert_into_file "app/models/feedback.rb", after: "class Feedback\n" do
+insert_into_file 'app/models/feedback.rb', after: "class Feedback\n" do
   <<-FEEDBACK_MAILER
   include ActiveModel::Model
   attr_accessor :full_name, :email, :topic, :comment
@@ -35,13 +26,8 @@ insert_into_file "app/models/feedback.rb", after: "class Feedback\n" do
   FEEDBACK_MAILER
 end
 
+# CREATE FEEDBACKS CONTROLLER
 rails_command('g controller Feedbacks --no-test-framework --no-helper --no-assets --no-template-engine')
-
-insert_into_file 'config/routes.rb', before: 'end' do
-  <<-FEEDBACK_ROUTE
-  resources 'feedbacks', only: [:create]
-  FEEDBACK_ROUTE
-end
 
 insert_into_file "app/controllers/feedbacks_controller.rb", after: "ApplicationController\n" do
   <<-FEEDBACKS_CONTROLLER
@@ -65,6 +51,15 @@ insert_into_file "app/controllers/feedbacks_controller.rb", after: "ApplicationC
   FEEDBACKS_CONTROLLER
 end
 
+# ADD ROUTES
+insert_into_file 'config/routes.rb', before: 'end' do
+  <<-FEEDBACK_ROUTE
+  resources 'feedbacks', only: [:create]
+  FEEDBACK_ROUTE
+end
+
+# GENERATE MAILER
+
 rails_command('g mailer Feedback')
 
 insert_into_file 'app/mailers/feedback_mailer.rb', after: 'ApplicationMailer' do
@@ -79,7 +74,18 @@ insert_into_file 'app/mailers/feedback_mailer.rb', after: 'ApplicationMailer' do
   FEEDBACKS_MAILER
 end
 
-# IF BOOTSTRAP??
+create_file 'config/initializers/mailer_setup.rb' do
+  <<-ACTION_MAILER_SETUP
+  ActionMailer::Base.delivery_method = :smtp
+  ActionMailer::Base.smtp_settings = {
+      :address              => "localhost",
+      :enable_starttls_auto => false
+  }
+  ACTION_MAILER_SETUP
+end
+
+# CREATE MODAL FORM
+# This is a bootstrap version.
 file 'app/views/feedback/_feedback.html.haml'
   append_to_file 'app/views/feedback/_feedback.html.haml' do
     <<-BOODSTRAP_FEEDBACK_MODAL
@@ -122,20 +128,18 @@ file 'app/views/feedback/_feedback.html.haml'
     BOODSTRAP_FEEDBACK_MODAL
     end
 
-
-# append_to_file 'layouts/_footer.rb' do
-#   <<-FEEDBACK_LINK
-#   %br
-#   = render 'feedback/feedback'
-#   FEEDBACK_LINK
-# end
-
+# ADD PARTIAL TO RENDER ON THE FOOTER
+append_to_file 'app/views/layouts/_footer.html.haml' do
+  <<-FEEDBACK_LINK
+  %br
+  = render 'feedback/feedback'
+  FEEDBACK_LINK
+end
 
 file 'app/views/feedback_mailer/send_feedback.html.haml'
 file 'app/views/feedback_mailer/send_feedback.text.haml'
 
-
-
+# ADD CREATE_FEEDBACK ACTION TO APPLICATION CONTROLLER
 insert_into_file 'app/controllers/application_controller.rb', after: "class ApplicationController < ActionController::Base\n" do
   <<-CONTROLLER_ACTION
   before_action :create_feedback
