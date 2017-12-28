@@ -45,7 +45,7 @@ insert_into_file "app/controllers/feedbacks_controller.rb", after: "ApplicationC
   private
 
   def feedback_params
-   params.require(:feedback).permit(:email, :topic, :comment)
+   params.require(:feedback).permit(:full_name, :email, :topic, :comment)
   end
 
   FEEDBACKS_CONTROLLER
@@ -67,21 +67,10 @@ insert_into_file 'app/mailers/feedback_mailer.rb', after: 'ApplicationMailer' do
   <<-FEEDBACKS_MAILER
 
   def send_feedback(message)
-    @body = "Hi Dave"
-    mail to: 'dschmura@humbledaisy.com'
+    @body = "Fizz Buzz Baz"
+    mail to: "admin@#{app_name}.com'
   end
-
   FEEDBACKS_MAILER
-end
-
-create_file 'config/initializers/mailer_setup.rb' do
-  <<-ACTION_MAILER_SETUP
-  ActionMailer::Base.delivery_method = :smtp
-  ActionMailer::Base.smtp_settings = {
-      :address              => "localhost",
-      :enable_starttls_auto => false
-  }
-  ACTION_MAILER_SETUP
 end
 
 # CREATE MODAL FORM
