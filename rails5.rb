@@ -174,30 +174,29 @@ create_file "app/views/layouts/_footer.html.haml" do
 end
 
 # ADD SET_ACTIVE_LINK JS TO APPLICATION.JS
-<<<<<<< HEAD
-append_to_file "app/assets/javascripts/application.js", <<-ACTIVE_HEADER
-$(document).on("turbolinks:load", function() {
-  setActiveLink();
-});
+append_to_file "app/assets/javascripts/application.js", after: '//= require_tree .\n' do
 
-  function setActiveLink() {
-    var path = window.location.pathname;
-    path = path.replace("\/$/", "");
-    path = decodeURIComponent(path);
-    var elemental = $("header .navbar-nav li a");
-    elemental.each(function() {
-      var href = $(this).attr('href');
-      if (path.substring(0, href.length) === href) {
-          $(this).closest('a').addClass('active');
-      }
+  <<-ACTIVE_HEADER
+  $(document).on("turbolinks:load", function() {
+    setActiveLink();
   });
-}
 
-ACTIVE_HEADER
+    function setActiveLink() {
+      var path = window.location.pathname;
+      path = path.replace("\/$/", "");
+      path = decodeURIComponent(path);
+      var elemental = $("header .navbar-nav li a");
+      elemental.each(function() {
+        var href = $(this).attr('href');
+        if (path.substring(0, href.length) === href) {
+            $(this).closest('a').addClass('active');
+        }
+    });
+  }
 
+  ACTIVE_HEADER
+end
 
-=======
->>>>>>> 9aeadbb2634e19e82d7e252d8b759cfe6c29392c
 if use_bourbon
   load_template('use_bourbon.rb')
 end
