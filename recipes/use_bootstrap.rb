@@ -61,14 +61,14 @@ create_file "app/views/layouts/_header.html.haml" do
 
   BOOTSTRAP_HEADER
 
+end
 
-create_file "app/views/layouts/_header.html.haml" do
+create_file "app/views/layouts/_footer.html.haml" do
 <<-BOOTSTRAP_FOOTER
 %footer.fixed-bottom.bg-dark
   .d-flex.flex-row.justify-content-between.align-items-center
     .footer-logo
-      -# = link_to image_tag('MiLocationsLogo.png', class: 'navbar-brand navbar-logo', alt: 'MiLoctions Logo, link to home page.'), root_path
-      -# %h2.footer-logo.float-left
+      -# = link_to image_tag("\#{site_name}Logo.png", class: 'navbar-brand navbar-logo', alt: "\#{site_name} Logo, link to home page."), root_path
       = link_to site_name, root_path, class:'navbar-brand'
     .footer-links
       %ul.navbar-nav.flex-row.justify-content-around
@@ -76,21 +76,8 @@ create_file "app/views/layouts/_header.html.haml" do
         %li.nav-item= link_to 'Contact Us', contact_path, class:'nav-link'
         %li.nav-item= link_to 'Privacy Policy', privacy_path, class:'nav-link'
       .footer-copyright.text-center
-        = link_to "© 2018 - Copyright, All Rights Reserved", about_path, :target => '_blank'
+        = link_to "© 2018 - Copyright \#{site_name}, All Rights Reserved", about_path
 
   BOOTSTRAP_FOOTER
 
-
-  # if use_devise do
-  #   insert_into_file  "app/views/layouts/_header.html.haml", after "%li.nav-item= link_to \"Privacy\", pages_privacy_path, class:\"nav-link\"" do
-  #   <<-DEVISE_LOGIN_HEADER
-  #   %li.nav-item
-  #   - if user_signed_in?
-  #     = link_to "Profile", edit_user_path(current_user.id)
-  #   - else
-  #     = link_to "User Login", new_user_session_path"
-
-  #   DEVISE_LOGIN_HEADER
-  #   end
-  # end
 end
