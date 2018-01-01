@@ -1,4 +1,4 @@
-  gem 'bootstrap', '~> 4.0.0.beta2.1'
+  gem 'bootstrap', '~> 4.0.0.beta3'
   gem 'popper_js'
   gem 'jquery-rails'
 
@@ -43,16 +43,43 @@ BOOTSTRAP_STYLE
 create_file "app/views/layouts/_header.html.haml" do
 <<-BOOTSTRAP_HEADER
 %header
-%nav.navbar.navbar-toggleable-md.navbar-inverse.fixed-top.bg-inverse
-  %button.navbar-toggler.navbar-toggler-right{"aria-controls" => "headerNavBar", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#headerNavBar", "data-toggle" => "collapse", :type => "button"}
-    %span.navbar-toggler-icon
-  = link_to site_name, root_path, class:"navbar-brand"
-  #headerNavBar.collapse.navbar-collapse
-    %ul.navbar-nav.ml-auto
-      %li.nav-item= link_to "About", pages_about_path, class:"nav-link"
-      %li.nav-item= link_to "Contact Us", pages_contact_path, class:"nav-link"
-      %li.nav-item= link_to "Privacy", pages_privacy_path, class:"nav-link"
+  / Navigation
+  %nav#mainNav.navbar.fixed-top.navbar-expand-md.navbar-dark.bg-dark.mb-4
+    %button.navbar-toggler{"aria-controls" => "navbarCollapse", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarCollapse", "data-toggle" => "collapse", :type => "button"}
+      %span.navbar-toggler-icon
+    #navbarCollapse.collapse.navbar-collapse
+      %ul.navbar-nav.mr-auto.text-uppercase
+        %li.nav-item
+          = link_to site_name, root_path, class: 'navbar-brand', id: root_path(anchor: 'page-top')
+          %span.sr-only (current)
+
+      .nav.my-2.my-md-0
+        %ul.navbar-nav.text-uppercase.ml-auto
+          %li.nav-item= link_to "About", about_path, class:"nav-link"
+          %li.nav-item= link_to "Contact Us", contact_path, class:"nav-link"
+          %li.nav-item= link_to "Privacy", privacy_path, class:"nav-link"
+
   BOOTSTRAP_HEADER
+
+
+create_file "app/views/layouts/_header.html.haml" do
+<<-BOOTSTRAP_FOOTER
+%footer.fixed-bottom.bg-dark
+  .d-flex.flex-row.justify-content-between.align-items-center
+    .footer-logo
+      -# = link_to image_tag('MiLocationsLogo.png', class: 'navbar-brand navbar-logo', alt: 'MiLoctions Logo, link to home page.'), root_path
+      -# %h2.footer-logo.float-left
+      = link_to site_name, root_path, class:'navbar-brand'
+    .footer-links
+      %ul.navbar-nav.flex-row.justify-content-around
+        %li.nav-item= link_to 'About', about_path, class:'nav-link'
+        %li.nav-item= link_to 'Contact Us', contact_path, class:'nav-link'
+        %li.nav-item= link_to 'Privacy Policy', privacy_path, class:'nav-link'
+      .footer-copyright.text-center
+        = link_to "© 2018 - Copyright, All Rights Reserved", about_path, :target => '_blank'
+
+  BOOTSTRAP_FOOTER
+
 
   # if use_devise do
   #   insert_into_file  "app/views/layouts/_header.html.haml", after "%li.nav-item= link_to \"Privacy\", pages_privacy_path, class:\"nav-link\"" do
