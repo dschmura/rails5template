@@ -149,8 +149,8 @@ end
 # ADD PARTIAL TO RENDER ON THE FOOTER
 append_to_file 'app/views/layouts/_footer.html.haml' do
   <<-FEEDBACK_LINK
-  %br
-  = render 'feedback/feedback'
+    .footer-contact
+      = render 'feedback/feedback'
   FEEDBACK_LINK
 end
 
