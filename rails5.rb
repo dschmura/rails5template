@@ -26,26 +26,29 @@ end
 # All apps get flash messages
 load_template('rails_flash_messages.rb')
 
+if yes? 'Do you wish to use webpacker? (y/n)'
+  use_webpacker = true
+end
 
 if yes? 'Do you wish to use bootstrap? (y/n)'
   use_bootstrap = true
 end
-if yes? 'Do you wish to use capistrano? (y/n)'
-  use_capistrano = true
-end
-
-if yes? 'Generate a favicon? (y/n)'
-  create_favicon = true
-end
-
-if yes? 'Do you wish to use devise? (y/n)'
-  use_devise = true
-end
-
+# if yes? 'Do you wish to use capistrano? (y/n)'
+#   use_capistrano = true
+# end
+#
+# if yes? 'Generate a favicon? (y/n)'
+#   create_favicon = true
+# end
+#
+# if yes? 'Do you wish to use devise? (y/n)'
+#   use_devise = true
+# end
+#
 if yes? 'Do you wish to use bourbon? (y/n)'
   use_bourbon = true
 end
-
+#
 if yes? 'Do you wish to use guard? (y/n)'
   use_guard = true
 end
@@ -53,11 +56,9 @@ if yes? 'Do you wish to include a mailer? (y/n)'
   use_mailer = true
 end
 
-# gem 'haml', '~> 5.0.0.beta.2'
 gem 'haml-rails'
-gem 'normalize-rails'
-gem 'font-awesome-rails'
-
+# gem 'normalize-rails'
+# gem 'font-awesome-rails'
 
 gem_group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -96,14 +97,20 @@ if use_guard
   load_template('use_guard.rb')
 end
 
-if create_favicon
-  load_template('create_favicon.rb')
-end
+# if create_favicon
+#   load_template('create_favicon.rb')
+# end
 
 
 rails_command("haml:replace_erbs")
+create_file "app/views/layouts/_header.html.haml"
+create_file "app/views/layouts/_footer.html.haml"
+
 generate(:controller, "Pages index about contact privacy")
 route "root to: 'pages#index'"
+route "get '/about', to: 'pages#about'"
+route "get '/contact', to: 'pages#contact'"
+route "get '/privacy', to: 'pages#privacy'"
 rails_command("db:create")
 rails_command("db:migrate")
 
@@ -117,9 +124,9 @@ run "mkdir spec/features"
 run "touch spec/factories.rb"
 
 # Set up for scss
-run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss"
-run "touch app/assets/stylesheets/custom.sass"
-gsub_file('app/assets/stylesheets/application.scss',  '*= require_tree .', '')
+# run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss"
+# run "touch app/assets/stylesheets/custom.sass"
+# gsub_file('app/assets/stylesheets/application.scss',  '*= require_tree .', '')
 
 # Inject into the factory bot files
 append_to_file "spec/factories.rb" do
@@ -161,58 +168,53 @@ end
 
 
 
-create_file "app/views/layouts/_footer.html.haml" do
-  <<-EOF
+# # ADD SET_ACTIVE_LINK JS TO APPLICATION.JS
+# append_to_file "app/assets/javascripts/application.js", after: '//= require_tree .\n' do
+#
+#   <<-ACTIVE_HEADER
+#   $(document).on("turbolinks:load", function() {
+#     setActiveLink();
+#   });
+#
+#     function setActiveLink() {
+#       var path = window.location.pathname;
+#       path = path.replace("\/$/", "");
+#       path = decodeURIComponent(path);
+#       var elemental = $("header .navbar-nav li a");
+#       elemental.each(function() {
+#         var href = $(this).attr('href');
+#         if (path.substring(0, href.length) === href) {
+#             $(this).closest('a').addClass('active');
+#         }
+#     });
+#   }
+#
+#   ACTIVE_HEADER
+# end
 
-%footer
-  %nav
-    %ul
-      %li
-      %li
-      %li
-  EOF
-end
 
-# ADD SET_ACTIVE_LINK JS TO APPLICATION.JS
-append_to_file "app/assets/javascripts/application.js", after: '//= require_tree .\n' do
 
-  <<-ACTIVE_HEADER
-  $(document).on("turbolinks:load", function() {
-    setActiveLink();
-  });
-
-    function setActiveLink() {
-      var path = window.location.pathname;
-      path = path.replace("\/$/", "");
-      path = decodeURIComponent(path);
-      var elemental = $("header .navbar-nav li a");
-      elemental.each(function() {
-        var href = $(this).attr('href');
-        if (path.substring(0, href.length) === href) {
-            $(this).closest('a').addClass('active');
-        }
-    });
-  }
-
-  ACTIVE_HEADER
-end
-
-if use_bourbon
-  load_template('use_bourbon.rb')
+if use_webpacker
+  load_template('use_webpacker.rb')
 end
 
 if use_bootstrap
   load_template('use_bootstrap.rb')
 end
 
-if use_devise
-  load_template('use_devise.rb')
+if use_bourbon
+  load_template('use_bourbon.rb')
 end
 
-if use_capistrano
-  load_template('use_capistrano.rb')
-end
-
+#
+# if use_devise
+#   load_template('use_devise.rb')
+# end
+#
+# if use_capistrano
+#   load_template('use_capistrano.rb')
+# end
+#
 if use_mailer
   load_template('use_feedback_mailer.rb')
 end
@@ -231,16 +233,16 @@ insert_into_file 'app/views/layouts/application.html.haml', after: "title" do
   ""
 end
 
-# Add alt message reminder
-append_to_file "app/assets/stylesheets/application.scss" do
-  <<-EOF
-
-// You Forgot The Alt Message
-img[alt=""], img:not([alt]) {
-  border: 5px dashed #c00;
-}
-  EOF
-end
+# # Add alt message reminder
+# append_to_file "app/assets/stylesheets/application.scss" do
+#   <<-EOF
+#
+# // You Forgot The Alt Message
+# img[alt=""], img:not([alt]) {
+#   border: 5px dashed #c00;
+# }
+#   EOF
+# end
 
 ##Configure Shoulda-matchers for Rails 5 compatability
 insert_into_file 'spec/rails_helper.rb', after: "require 'rspec/rails'" do
@@ -255,7 +257,7 @@ end
 SHOULDA
 end
 
-run "subl ."
+run "atom ."
 
 
 after_bundle do

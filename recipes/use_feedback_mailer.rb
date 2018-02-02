@@ -1,16 +1,16 @@
-# SETUP LETTER_OPENER FOR DEVELOPMENT
-gem_group :development, :test do
-  gem 'letter_opener'
-end
+# # SETUP LETTER_OPENER FOR DEVELOPMENT
+# gem_group :development, :test do
+#   gem 'letter_opener'
+# end
 
-insert_into_file 'config/environments/development.rb', after: 'Rails.application.configure do\n' do
-  <<-LETTER_OPENER
-  # Support for letter_opener
-    config.action_mailer.delivery_method = :letter_opener
-    config.action_mailer.perform_deliveries = true
-    config.action_mailer.raise_delivery_errors = true
-  LETTER_OPENER
-end
+# insert_into_file 'config/environments/development.rb', after: 'Rails.application.configure do\n' do
+#   <<-LETTER_OPENER
+#   # Support for letter_opener
+#     config.action_mailer.delivery_method = :letter_opener
+#     config.action_mailer.perform_deliveries = true
+#     config.action_mailer.raise_delivery_errors = true
+#   LETTER_OPENER
+# end
 
 # CREATE MODEL TO HANDLE VALIDATIONS
 rails_command("g model Feedback --skip-migration")
@@ -120,14 +120,14 @@ file 'app/views/feedback/_feedback.html.haml'
     BOODSTRAP_FEEDBACK_MODAL
 end
 
-# SETUP ENVIRONMENTS FOR mailer
-insert_into_file 'config/environments/development.rb', after: 'Rails.application.configure do' do
-  <<-DEVELOPMENT_ENVIRONMENT
-
-  config.action_mailer.delivery_method = :letter_opener
-
-  DEVELOPMENT_ENVIRONMENT
-end
+# # SETUP ENVIRONMENTS FOR mailer
+# insert_into_file 'config/environments/development.rb', after: 'Rails.application.configure do' do
+#   <<-DEVELOPMENT_ENVIRONMENT
+#
+#   config.action_mailer.delivery_method = :letter_opener
+#
+#   DEVELOPMENT_ENVIRONMENT
+# end
 
 insert_into_file 'config/environments/production.rb', after: 'Rails.application.configure do' do
   <<-PRODUCTION_ENVIRONMENT
@@ -169,3 +169,12 @@ insert_into_file 'app/controllers/application_controller.rb', after: "class Appl
   CONTROLLER_ACTION
 
 end
+
+# ALLOW SCRIPTS TO BE LOADED ON HTTP (LESS SECURE)
+  print
+  "there's a new initializer called content_security_policy.rb - in there you'll find a line like this:\n
+  .script_src :self, :https\n
+  \n
+  change it to:\n
+  \n
+  p.script_src :self, :https, :unsafe_inline\n"
