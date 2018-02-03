@@ -33,10 +33,10 @@ end
 if yes? 'Do you wish to use bootstrap? (y/n)'
   use_bootstrap = true
 end
-# if yes? 'Do you wish to use capistrano? (y/n)'
-#   use_capistrano = true
-# end
-#
+if yes? 'Do you wish to use capistrano? (y/n)'
+  use_capistrano = true
+end
+
 # if yes? 'Generate a favicon? (y/n)'
 #   create_favicon = true
 # end
@@ -57,8 +57,6 @@ if yes? 'Do you wish to include a mailer? (y/n)'
 end
 
 gem 'haml-rails'
-# gem 'normalize-rails'
-# gem 'font-awesome-rails'
 
 gem_group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -166,8 +164,6 @@ insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper"
   EOF
 end
 
-
-
 # # ADD SET_ACTIVE_LINK JS TO APPLICATION.JS
 # append_to_file "app/assets/javascripts/application.js", after: '//= require_tree .\n' do
 #
@@ -192,29 +188,15 @@ end
 #   ACTIVE_HEADER
 # end
 
-
-
-if use_webpacker
-  load_template('use_webpacker.rb')
-end
-
-if use_bootstrap
-  load_template('use_bootstrap.rb')
-end
-
-if use_bourbon
-  load_template('use_bourbon.rb')
-end
-
 #
 # if use_devise
 #   load_template('use_devise.rb')
 # end
-#
-# if use_capistrano
-#   load_template('use_capistrano.rb')
-# end
-#
+
+if use_capistrano
+  load_template('use_capistrano.rb')
+end
+
 if use_mailer
   load_template('use_feedback_mailer.rb')
 end
@@ -233,17 +215,6 @@ insert_into_file 'app/views/layouts/application.html.haml', after: "title" do
   ""
 end
 
-# # Add alt message reminder
-# append_to_file "app/assets/stylesheets/application.scss" do
-#   <<-EOF
-#
-# // You Forgot The Alt Message
-# img[alt=""], img:not([alt]) {
-#   border: 5px dashed #c00;
-# }
-#   EOF
-# end
-
 ##Configure Shoulda-matchers for Rails 5 compatability
 insert_into_file 'spec/rails_helper.rb', after: "require 'rspec/rails'" do
 <<-SHOULDA
@@ -257,10 +228,23 @@ end
 SHOULDA
 end
 
-run "atom ."
+
 
 
 after_bundle do
+  run "atom ."
+  if use_webpacker
+    load_template('use_webpacker.rb')
+  end
+
+  if use_bootstrap
+    load_template('use_bootstrap.rb')
+  end
+
+  if use_bourbon
+    load_template('use_bourbon.rb')
+  end
+
 
   git :init
   git add: "."
