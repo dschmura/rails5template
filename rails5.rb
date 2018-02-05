@@ -48,10 +48,10 @@ end
 if yes? 'Do you wish to use bourbon? (y/n)'
   use_bourbon = true
 end
-#
-if yes? 'Do you wish to use guard? (y/n)'
-  use_guard = true
-end
+
+# if yes? 'Do you wish to use guard? (y/n)'
+#   use_guard = true
+# end
 if yes? 'Do you wish to include a mailer? (y/n)'
   use_mailer = true
 end
@@ -91,9 +91,9 @@ gem_group :development do
   gem 'pry-rails'
 end
 
-if use_guard
-  load_template('use_guard.rb')
-end
+# if use_guard
+#   load_template('use_guard.rb')
+# end
 
 # if create_favicon
 #   load_template('create_favicon.rb')
@@ -228,7 +228,13 @@ end
 SHOULDA
 end
 
-
+file 'Procfile'
+append_to_file 'Procfile' do
+  <<-PROC
+server: bundle exec guard
+assets: bin/webpack-dev-server
+  PROC
+end
 
 
 after_bundle do
