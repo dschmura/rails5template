@@ -49,10 +49,8 @@ append_to_file "app/javascript/#{app_name}/index.js" do
   // Include internal resources for this app
   import './javascripts/application'
 
-  // require.context('./javascripts/', true, /\.(js)$/i)
-  require.context('./stylesheets/', true, /^\.\/[^_].*\.(css|scss|sass)$/i)
-  require.context('./images/', true, /\.\/(gif|jpg|png|svg)$/i)
-
+  require.context("./stylesheets", true, /\\.(css|scss|sass)$/)
+  require.context('./images/', true, /.(gif|jpg|jpeg|png|svg)$/)
 
   INDEX_JS
 end
@@ -86,17 +84,17 @@ end
 
 file "app/javascript/#{app_name}/stylesheets/application.sass"
 append_to_file "app/javascript/#{app_name}/stylesheets/application.sass" do
-  <<-APPLICATION_SASS
-  # @import '~bootstrap/scss/functions'
-  # @import '~bootstrap/scss/bootstrap'
-  @import 'variables'
+<<-APPLICATION_SASS
+@import '~bootstrap/scss/functions'
+@import '~bootstrap/scss/bootstrap'
+@import 'variables'
 
-  // You Forgot The Alt Message
-  img[alt=""],
-  img:not([alt])
-    border: 5px dashed #c00
+// You Forgot The Alt Message
+img[alt=""],
+img:not([alt])
+  border: 5px dashed #c00
 
-  APPLICATION_SASS
+APPLICATION_SASS
 end
 
 file "app/javascript/#{app_name}/stylesheets/_variables.sass"
@@ -105,4 +103,5 @@ gsub_file('app/views/layouts/application.html.haml',  "= stylesheet_link_tag    
 
 gsub_file('app/views/layouts/application.html.haml',  "= javascript_include_tag 'application', 'data-turbolinks-track': 'reload'", "= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'")
 
-# yarn add
+run "mkdir app/javascript/#{app_name}/images"
+run 'yarn add rails-ujs turbolinks jquery stimulus bourbon bootstrap'
