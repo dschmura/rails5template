@@ -78,7 +78,7 @@ append_to_file "app/views/layouts/_footer.html.haml" do
         %li.nav-item= link_to 'Privacy Policy', privacy_path, class:'nav-link'
       .footer-copyright.text-center
         = link_to "© 2018 - Copyright \#{site_name}, All Rights Reserved", about_path
-
+    .footer-contact
   BOOTSTRAP_FOOTER
 
 end

@@ -147,10 +147,10 @@ insert_into_file 'config/environments/production.rb', after: 'Rails.application.
 end
 
 # ADD PARTIAL TO RENDER ON THE FOOTER
-append_to_file 'app/views/layouts/_footer.html.haml' do
+append_to_file 'app/views/layouts/_footer.html.haml', after: '.footer-contact' do
   <<-FEEDBACK_LINK
-    .footer-contact
-      = render 'feedback/feedback'
+
+    = render 'feedback/feedback'
   FEEDBACK_LINK
 end
 
