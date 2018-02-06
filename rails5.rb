@@ -197,11 +197,6 @@ if use_capistrano
   load_template('use_capistrano.rb')
 end
 
-if use_mailer
-  load_template('use_feedback_mailer.rb')
-end
-
-
 # Add a class for the name of the controller.
 insert_into_file 'app/views/layouts/application.html.haml', after: "%body" do
   "{:class => controller.controller_name}\n    = render 'layouts/header'\n    .content#content"
@@ -231,7 +226,7 @@ end
 file 'Procfile'
 append_to_file 'Procfile' do
   <<-PROC
-server: bundle exec guard
+server: bundle exec rails s
 assets: bin/webpack-dev-server
   PROC
 end
@@ -245,6 +240,10 @@ after_bundle do
 
   if use_bootstrap
     load_template('use_bootstrap.rb')
+  end
+
+  if use_mailer
+    load_template('use_feedback_mailer.rb')
   end
 
   if use_bourbon
