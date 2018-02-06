@@ -170,6 +170,53 @@ insert_into_file 'app/controllers/application_controller.rb', after: "class Appl
 
 end
 
+insert_into_file 'app/views/pages/contact.html.haml', after: '%p Find me in app/views/pages/contact.html.haml' do
+  <<-CONTACT_PAGE_FORM
+
+
+.container.text-center.contact-us--form
+  %h1 Pages#contact
+  %p Find me in app/views/pages/contact.html.haml
+  %h3.heading-style-1.text-center.text-uppercase.text-weight-normal
+    Contact Us
+  = form_with model: @feedback, class: 'contact-us-page--form' do |f|
+
+    .form-group
+      = notice
+      = @feedback.errors.full_messages.join(', ')
+
+    .form-group
+      = f.text_field :full_name, placeholder: 'Full Name'
+
+    .form-group
+      = f.email_field :email, placeholder: 'email@somewhere.com', required: true
+
+    .form-group
+      = f.label :topic, 'Topic', :class => "control-label"
+      = f.select(:topic, options_for_select([['I have some feedback...','feedback'],['I have a question...', 'question'],['I have a feature request...','feature'],['I’d like to report a bug...','bug'],['Other','other']],1))
+
+    .form-group
+      = f.text_area :comment, placeholder: 'What is on your mind?', required: true
+
+    .form-group
+      = f.submit :submit, :class => "btn btn-success"
+
+
+  CONTACT_PAGE_FORM
+end
+
+file "app/javascript/#{app_name}/stylesheets/_contact_us_page.sass"
+append_to_file "app/javascript/#{app_name}/stylesheets/_contact_us_page.sass" do
+  <<-CONTACT_STYLE
+.contact-us--form
+.contact-us-page--form
+  #feedback_full_name
+  #feedback_email
+  #feedback_topic
+  #feedback_comment
+  CONTACT_STYLE
+end
+
 # ALLOW SCRIPTS TO BE LOADED ON HTTP (LESS SECURE)
   print
   "there's a new initializer called content_security_policy.rb - in there you'll find a line like this:\n
