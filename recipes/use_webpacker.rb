@@ -89,6 +89,9 @@ append_to_file "app/javascript/#{app_name}/stylesheets/application.sass" do
 @import '~bootstrap/scss/bootstrap'
 @import 'variables'
 
+.modal-backdrop
+  z-index: -1
+
 // You Forgot The Alt Message
 img[alt=""],
 img:not([alt])
@@ -101,7 +104,7 @@ file "app/javascript/#{app_name}/stylesheets/_variables.sass"
 
 gsub_file('app/views/layouts/application.html.haml',  "= stylesheet_link_tag    'application', media: 'all'", "= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'")
 
-gsub_file('app/views/layouts/application.html.haml',  "= javascript_include_tag 'application', 'data-turbolinks-track': 'reload'", "= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'")
+gsub_file('app/views/layouts/application.html.haml',  "= javascript_include_tag 'application'", "= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'")
 
 run "mkdir app/javascript/#{app_name}/images"
 run 'yarn add rails-ujs turbolinks jquery stimulus bourbon bootstrap'
