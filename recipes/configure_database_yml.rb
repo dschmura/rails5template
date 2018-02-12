@@ -4,14 +4,12 @@ file 'config/database.yml'
 append_to_file 'config/database.yml' do
   <<-DATABASE_YML
 default: &default
-adapter: postgresql
-encoding: unicode
+  adapter: postgresql
+  encoding: unicode
 
 development:
   <<: *default
   database: #{app_name}_development
-  username: 'root'
-  password: ''
 
 test:
   <<: *default
