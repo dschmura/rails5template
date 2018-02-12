@@ -99,7 +99,7 @@ end
 #   load_template('create_favicon.rb')
 # end
 
-
+load_template('configure_database_yml.rb' )
 rails_command("haml:replace_erbs")
 create_file "app/views/layouts/_header.html.haml"
 create_file "app/views/layouts/_footer.html.haml"
@@ -164,7 +164,6 @@ insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper"
   EOF
 end
 
-load_template('configure_database_yml.rb' )
 
 # # ADD SET_ACTIVE_LINK JS TO APPLICATION.JS
 # append_to_file "app/assets/javascripts/application.js", after: '//= require_tree .\n' do
@@ -199,20 +198,28 @@ if use_capistrano
   load_template('use_capistrano.rb')
 end
 
-# Add a class for the name of the controller.
-insert_into_file 'app/views/layouts/application.html.haml', after: "%body" do
-  "{:class => controller.controller_name}\n    = render 'layouts/header'\n \t\t.content#content"
-end
+run 'rm app/views/layouts/application.html.haml'
+file 'app/views/layouts/application.html.haml'
+append_to_file 'app/views/layouts/application.html.haml' do
+  <<-APPLICATION_LAYOUT
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+    %title Minitable
+    = csrf_meta_tags
+    = stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
+  %body#page-top{:class => controller.controller_name}
+    .corner-ribbon.top-right.sticky.red.shadow Work in Progress
 
-gsub_file 'app/views/layouts/application.html.haml', "= yield", "   = yield"
+    = render 'layouts/header'
+    .content#content
+      = yield
+      = render 'layouts/footer'
+      = render 'feedback/feedback'
 
-
-insert_into_file 'app/views/layouts/application.html.haml', after: "= yield" do
-  "\n    = render 'layouts/footer'"
-end
-
-insert_into_file 'app/views/layouts/application.html.haml', after: "title" do
-  ""
+  APPLICATION_LAYOUT
 end
 
 ##Configure Shoulda-matchers for Rails 5 compatability
@@ -235,10 +242,9 @@ server: bundle exec rails s
 assets: bin/webpack-dev-server
   PROC
 end
-
+run "mkdir app/javascript/#{app_name}/images"
 
 after_bundle do
-  run "atom ."
   if use_webpacker
     load_template('use_webpacker.rb')
   end
@@ -255,6 +261,7 @@ after_bundle do
     load_template('use_bourbon.rb')
   end
 
+  run "atom ."
 
   git :init
   git add: "."
