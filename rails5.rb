@@ -164,6 +164,7 @@ insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper"
   EOF
 end
 
+load_template('configure_database_yml.rb' )
 # # ADD SET_ACTIVE_LINK JS TO APPLICATION.JS
 # append_to_file "app/assets/javascripts/application.js", after: '//= require_tree .\n' do
 #
