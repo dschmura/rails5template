@@ -165,6 +165,7 @@ insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper"
 end
 
 load_template('configure_database_yml.rb' )
+
 # # ADD SET_ACTIVE_LINK JS TO APPLICATION.JS
 # append_to_file "app/assets/javascripts/application.js", after: '//= require_tree .\n' do
 #
@@ -200,8 +201,11 @@ end
 
 # Add a class for the name of the controller.
 insert_into_file 'app/views/layouts/application.html.haml', after: "%body" do
-  "{:class => controller.controller_name}\n    = render 'layouts/header'\n    .content#content"
+  "{:class => controller.controller_name}\n    = render 'layouts/header'\n \t\t.content#content"
 end
+
+gsub_file 'app/views/layouts/application.html.haml', "= yield", "   = yield"
+
 
 insert_into_file 'app/views/layouts/application.html.haml', after: "= yield" do
   "\n    = render 'layouts/footer'"
