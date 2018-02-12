@@ -1,7 +1,3 @@
-# gem 'bootstrap', '~> 4.0.0.beta3'
-# gem 'popper_js'
-# gem 'jquery-rails'
-
 insert_into_file "app/helpers/application_helper.rb", after: "ApplicationHelper\n" do
   <<-APPHELPER
 def bootstrap_class_for flash_type
@@ -20,26 +16,6 @@ end
 
 APPHELPER
 end
-
-#   insert_into_file "app/assets/javascripts/application.js", after: "// about supported directives.\n//\n" do
-#     "\n//= require jquery2\n//= require popper\n//= require bootstrap\n"
-#   end
-#
-#
-#
-#   insert_into_file "app/assets/stylesheets/application.scss", after: " */\n" do
-#     "@charset 'utf-8';
-#     \n@import 'normalize-rails';
-#     \n@import 'font-awesome';"
-#   end
-#
-#   append_to_file "app/assets/stylesheets/application.scss", <<-BOOTSTRAP_STYLE
-#   // Custom bootstrap variables must be set or imported before bootstrap itself.
-# @import "bootstrap";
-# BOOTSTRAP_STYLE
-
-
-
 # Create and link partials for header and footer
 append_to_file "app/views/layouts/_header.html.haml" do
 <<-BOOTSTRAP_HEADER
