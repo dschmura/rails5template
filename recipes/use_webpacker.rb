@@ -19,8 +19,10 @@ insert_into_file 'config/application.rb', after: 'config.load_defaults 5.2' do
 
 end
 
-# SET UP ASSETS STRUCTURE FOR WEBPACKER
+rails_command('bundle exec rails webpacker:install')
 
+# SET UP ASSETS STRUCTURE FOR WEBPACKER
+file 'app/javascript/packs/application.js'
 insert_into_file "app/javascript/packs/application.js", after: "// layout file, like app/views/layouts/application.html.erb" do
   <<-PACKS_APPLICATION_JS
 
@@ -107,4 +109,8 @@ gsub_file('app/views/layouts/application.html.haml',  "= stylesheet_link_tag    
 gsub_file('app/views/layouts/application.html.haml',  "= javascript_include_tag 'application'", "= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'")
 
 run "mkdir app/javascript/#{app_name}/images"
-run 'yarn add rails-ujs turbolinks jquery stimulus bourbon bootstrap'
+run 'yarn add rails-ujs turbolinks jquery stimulus bourbon bootstrap babili'
+# Add popper which is a dependencie of bootstrap.
+# I am not sure why I had to run this step manually
+# to get it to work, but maybe something with a name conflict.
+run 'yarn add popper.js -D'
