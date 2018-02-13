@@ -18,14 +18,14 @@ test:
 staging:
   <<: *default
   database: #{app_name}_staging
-  username: <%= Rails.application.secrets.staging_db_username %>
-  password: <%= Rails.application.secrets.staging_db_password %>
+  username: <%= Rails.application.credentials.STAGING_DB_USERNAME %>
+  password: <%= Rails.application.credentials.STAGING_DB_PASSWORD %>
 
 production:
   <<: *default
   database: #{app_name}_production
-  username: <%= Rails.application.secrets.production_db_username %>
-  password: <%= Rails.application.secrets.production_db_password %>
+  username: <%= Rails.application.credentials.PRODUCTION_DB_USERNAME %>
+  password: <%= Rails.application.credentials.PRODUCTION_DB_PASSWORD %>
 
   DATABASE_YML
 
