@@ -113,18 +113,13 @@ rails_command("db:create")
 rails_command("db:migrate")
 
 # Bundle and set up RSpec
+run 'rails generate rspec:install'
 
-run "rails generate rspec:install"
 # Set up the spec folders for RSpec
-run "mkdir spec/models"
-run "mkdir spec/controllers"
-run "mkdir spec/features"
-run "touch spec/factories.rb"
-
-# Set up for scss
-# run "mv app/assets/stylesheets/application.css app/assets/stylesheets/application.scss"
-# run "touch app/assets/stylesheets/custom.sass"
-# gsub_file('app/assets/stylesheets/application.scss',  '*= require_tree .', '')
+run 'mkdir spec/models'
+run 'mkdir spec/controllers'
+run 'mkdir spec/features'
+run 'touch spec/factories.rb'
 
 # Inject into the factory bot files
 append_to_file "spec/factories.rb" do
@@ -242,7 +237,11 @@ server: bundle exec rails s
 assets: bin/webpack-dev-server
   PROC
 end
-run "mkdir app/javascript/#{app_name}/images"
+file "app/javascript/#{app_name}/images/fav.ico"
+
+load_template('configure_nginx.rb')
+load_template('configure_puma.rb')
+
 
 after_bundle do
   if use_webpacker
