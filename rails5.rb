@@ -207,7 +207,7 @@ append_to_file 'app/views/layouts/application.html.haml' do
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
   %body#page-top{:class => controller.controller_name}
     .corner-ribbon.top-right.sticky.red.shadow Work in Progress
-
+    = debug(params) if Rails.env.development?
     = render 'layouts/header'
     .content#content
       = yield

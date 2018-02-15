@@ -99,6 +99,12 @@ img[alt=""],
 img:not([alt])
   border: 5px dashed #c00
 
+.debug_dump
+  clear: both
+  float: left
+  width: 100%
+  margin-top: 45px
+
 APPLICATION_SASS
 end
 
