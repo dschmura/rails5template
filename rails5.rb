@@ -263,6 +263,8 @@ after_bundle do
   run "atom ."
 
   git :init
+  append_to_file '.gitignore' do ".DS_Store" end
+
   git add: "."
   git commit: %Q{ -m 'Initial commit' }
 
