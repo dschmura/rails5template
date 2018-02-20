@@ -235,7 +235,7 @@ end
 file 'Procfile'
 append_to_file 'Procfile' do
   <<-PROC
-server: bundle exec rails s
+server: bundle exec rails s -p 3000
 assets: bin/webpack-dev-server
   PROC
 end
