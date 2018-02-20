@@ -99,6 +99,8 @@ end
 #   load_template('create_favicon.rb')
 # end
 
+load_template('update_readme.rb')
+
 load_template('configure_database_yml.rb' )
 rails_command("haml:replace_erbs")
 create_file "app/views/layouts/_header.html.haml"
