@@ -141,6 +141,26 @@ insert_into_file "spec/rails_helper.rb", after: "RSpec.configure do |config|\n" 
   config.after(:each) do\n    DatabaseCleaner.clean\n  end\n\n"
 end
 
+# Set up SiteName and PageTitle Helpers
+insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper" do <<-APPLICATION_HELPER
+
+  def site_name
+    t :site_name
+  end
+
+  # Returns the full title on a per-page basis.
+  def page_title
+    if @page_title.nil?
+      "#{params[:controller].titleize} | " + (t :site_name)
+    else
+      "#{@page_title} | " + (t :site_name)
+    end
+  end
+
+  APPLICATION_HELPER
+end
+
+gsub_file 'config/locales/en.yml', 'hello: "Hello world"', "\"site_name: #{app_name}\""
 gsub_file "spec/rails_helper.rb",
           "config.use_transactional_fixtures = true",
           "config.use_transactional_fixtures = false"
@@ -148,17 +168,6 @@ gsub_file "spec/rails_helper.rb",
 # Set up Shoulda Matchers
 append_to_file "spec/rails_helper.rb" do
   "\nShoulda::Matchers.configure do |config|\n  config.integrate do |with|\n    with.test_framework :rspec\n    with.library :rails\n  end\nend"
-end
-
-
-# Set up SiteName Helper
-insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper" do <<-EOF
-
-  def site_name
-    @site_name = nil
-    @site_name = @site_name || Rails.application.class.parent_name.titleize
-  end
-  EOF
 end
 
 

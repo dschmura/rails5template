@@ -27,7 +27,7 @@ append_to_file "app/views/layouts/_header.html.haml" do
     #navbarCollapse.collapse.navbar-collapse
       %ul.navbar-nav.mr-auto.text-uppercase
         %li.nav-item
-          = link_to site_name, root_path, class: 'navbar-brand', id: root_path(anchor: 'page-top')
+          = link_to (t :site_name), root_path, class: 'navbar-brand', id: root_path(anchor: 'page-top')
           %span.sr-only (current)
 
       .nav.my-2.my-md-0
@@ -45,15 +45,15 @@ append_to_file "app/views/layouts/_footer.html.haml" do
 %footer.fixed-bottom.bg-dark
   .d-flex.flex-row.justify-content-between.align-items-center
     .footer-logo
-      -# = link_to image_tag("\#{site_name}Logo.png", class: 'navbar-brand navbar-logo', alt: "\#{site_name} Logo, link to home page."), root_path
-      = link_to site_name, root_path, class:'navbar-brand'
+      -# = link_to image_tag("\#{(t :site_name)}Logo.png", class: 'navbar-brand navbar-logo', alt: "\#{(t :site_name)} Logo, link to home page."), root_path
+      = link_to (t :site_name), root_path, class:'navbar-brand'
     .footer-links
       %ul.navbar-nav.flex-row.justify-content-around
         %li.nav-item= link_to 'About', about_path, class:'nav-link'
         %li.nav-item= link_to 'Contact Us', contact_path, class:'nav-link'
         %li.nav-item= link_to 'Privacy Policy', privacy_path, class:'nav-link'
       .footer-copyright.text-center
-        = link_to "© 2018 - Copyright \#{site_name}, All Rights Reserved", about_path
+        = link_to "© 2018 - Copyright \#{(t :site_name)}, All Rights Reserved", about_path
     .footer-contact
   BOOTSTRAP_FOOTER
 
