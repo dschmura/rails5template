@@ -205,8 +205,8 @@ insert_into_file 'app/views/pages/contact.html.haml', after: '%p Find me in app/
   CONTACT_PAGE_FORM
 end
 
-file "app/javascript/#{app_name}/stylesheets/_contact_us_page.sass"
-append_to_file "app/javascript/#{app_name}/stylesheets/_contact_us_page.sass" do
+file "app/webpacker/#{app_name}/stylesheets/_contact_us_page.sass"
+append_to_file "app/webpacker/#{app_name}/stylesheets/_contact_us_page.sass" do
   <<-CONTACT_STYLE
 .contact-us--form
 .contact-us-page--form
