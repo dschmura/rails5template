@@ -1,5 +1,5 @@
-file 'config/puma.rb.sample'
-append_to_file 'config/puma.rb.sample' do
+file 'config/puma.sample.rb'
+append_to_file 'config/puma.sample.rb' do
   <<-PUMA_CONF
 #!/usr/bin/env puma
 
