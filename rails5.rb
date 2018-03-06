@@ -33,22 +33,11 @@ end
 if yes? 'Do you wish to use bootstrap? (y/n)'
   use_bootstrap = true
 end
-if yes? 'Do you wish to use capistrano? (y/n)'
-  use_capistrano = true
-end
 
-# if yes? 'Generate a favicon? (y/n)'
-#   create_favicon = true
-# end
-#
 # if yes? 'Do you wish to use devise? (y/n)'
 #   use_devise = true
 # end
 #
-if yes? 'Do you wish to use bourbon? (y/n)'
-  use_bourbon = true
-end
-
 # if yes? 'Do you wish to use guard? (y/n)'
 #   use_guard = true
 # end
@@ -79,13 +68,16 @@ gem_group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
-  gem 'capistrano-rails'
-  gem 'capistrano-postgresql', '~> 4.2.0'
-  gem 'capistrano-rvm'
-  gem 'capistrano-passenger'
   # Invoke rake tasks on remote server.
   # example use: cap staging    invoke:rake TASK=db:seed
-  gem 'capistrano-rake', require: false
+  gem 'capistrano',         require: false
+  gem 'capistrano-rbenv',   require: false
+  gem 'capistrano-postgresql'
+  gem 'capistrano-rails',   require: false
+  gem 'capistrano-bundler', require: false
+  gem 'capistrano3-puma',   require: false
+  # gem 'capistrano-rvm'
+  # gem 'capistrano-passenger'
   gem 'erb2haml'
   gem 'pry'
   gem 'pry-rails'
@@ -95,11 +87,7 @@ end
 #   load_template('use_guard.rb')
 # end
 
-# if create_favicon
-#   load_template('create_favicon.rb')
-# end
-
-load_template('update_readme.rb')
+# load_template('update_readme.rb')
 
 load_template('configure_database_yml.rb' )
 rails_command("haml:replace_erbs")
@@ -121,9 +109,9 @@ run 'rails generate rspec:install'
 run 'mkdir spec/models'
 run 'mkdir spec/controllers'
 run 'mkdir spec/features'
-run 'touch spec/factories.rb'
 
 # Inject into the factory bot files
+file 'spec/factories.rb'
 append_to_file "spec/factories.rb" do
   "FactoryBot.define do\nend"
 end
@@ -142,7 +130,9 @@ insert_into_file "spec/rails_helper.rb", after: "RSpec.configure do |config|\n" 
 end
 
 # Set up SiteName and PageTitle Helpers
-insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper" do <<-APPLICATION_HELPER
+insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper" do
+  <<-APPLICATION_HELPER
+
 
   def site_name
     t :site_name
@@ -151,16 +141,20 @@ insert_into_file 'app/helpers/application_helper.rb', after: "ApplicationHelper"
   # Returns the full title on a per-page basis.
   def page_title
     if @page_title.nil?
-      "#{params[:controller].titleize} | " + (t :site_name)
+      "\#{params[:controller].titleize} | " + (t :site_name)
     else
-      "#{@page_title} | " + (t :site_name)
+      "\#{@page_title} | " + (t :site_name)
     end
   end
 
   APPLICATION_HELPER
 end
 
-gsub_file 'config/locales/en.yml', 'hello: "Hello world"', "\"site_name: #{app_name}\""
+# gsub_file 'config/locales/en.yml', 'hello: "Hello world"', "\"site_name: #{app_name}\""
+
+
+
+
 gsub_file "spec/rails_helper.rb",
           "config.use_transactional_fixtures = true",
           "config.use_transactional_fixtures = false"
@@ -195,14 +189,6 @@ end
 #   ACTIVE_HEADER
 # end
 
-#
-# if use_devise
-#   load_template('use_devise.rb')
-# end
-
-if use_capistrano
-  load_template('use_capistrano.rb')
-end
 
 run 'rm app/views/layouts/application.html.haml'
 file 'app/views/layouts/application.html.haml'
@@ -212,7 +198,7 @@ append_to_file 'app/views/layouts/application.html.haml' do
 %html
   %head
     %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
-    %title Minitable
+    %title= page_title
     = csrf_meta_tags
     = stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
@@ -227,6 +213,34 @@ append_to_file 'app/views/layouts/application.html.haml' do
 
   APPLICATION_LAYOUT
 end
+
+# SET DEFAUL SITE NAME
+#####################################################
+# Locales
+#####################################################
+gsub_file 'config/locales/en.yml', /  hello: "Hello world"/ do
+  <<-YAML
+  site_name: \"#{app_name}\"
+  YAML
+end
+
+# RAISE ERROR IF TRANSLATION IS MISSING (ie: site_name)
+insert_into_file 'config/environments/development.rb', after: 'config.eager_load = false' do
+  <<-CONFIG
+
+      config.action_view.raise_on_missing_translations = true
+
+  CONFIG
+end
+
+insert_into_file 'config/environments/test.rb', after: 'config.eager_load = false' do
+  <<-CONFIG
+
+      config.action_view.raise_on_missing_translations = true
+
+  CONFIG
+end
+
 
 ##Configure Shoulda-matchers for Rails 5 compatability
 insert_into_file 'spec/rails_helper.rb', after: "require 'rspec/rails'" do
@@ -248,16 +262,21 @@ server: bundle exec rails s -p 3000
 assets: bin/webpack-dev-server
   PROC
 end
-file "app/javascript/#{app_name}/images/fav.ico"
+# file "app/javascript/#{app_name}/images/fav.ico"
 
 load_template('configure_nginx.rb')
 load_template('configure_puma.rb')
 
+#
+# if use_devise
+#   load_template('use_devise.rb')
+# end
+
+load_template('use_capistrano.rb')
 
 after_bundle do
-  if use_webpacker
-    load_template('use_webpacker.rb')
-  end
+
+  load_template('use_webpacker.rb')
 
   if use_bootstrap
     load_template('use_bootstrap.rb')
@@ -267,11 +286,8 @@ after_bundle do
     load_template('use_feedback_mailer.rb')
   end
 
-  if use_bourbon
-    load_template('use_bourbon.rb')
-  end
-
-  run "atom ."
+  load_template('create_favicon.rb')
+  run 'atom .'
 
   git :init
   append_to_file '.gitignore' do ".DS_Store" end
