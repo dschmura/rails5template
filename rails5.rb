@@ -26,9 +26,9 @@ end
 # All apps get flash messages
 load_template('rails_flash_messages.rb')
 
-if yes? 'Do you wish to use webpacker? (y/n)'
-  use_webpacker = true
-end
+# if yes? 'Do you wish to use webpacker? (y/n)'
+#   use_webpacker = true
+# end
 
 if yes? 'Do you wish to use bootstrap? (y/n)'
   use_bootstrap = true
@@ -295,4 +295,8 @@ after_bundle do
   git add: "."
   git commit: %Q{ -m 'Initial commit' }
 
+  puts <<-CERTBOT
+
+  RUN THIS COMMAND ON YOUR SERVER: sudo certbot --nginx -d #{app_name}.com -d www.#{app_name}.com"
+  CERTBOT
 end
