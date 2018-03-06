@@ -116,8 +116,8 @@ gsub_file('app/views/layouts/application.html.haml',  "= stylesheet_link_tag    
 gsub_file('app/views/layouts/application.html.haml',  "= javascript_include_tag 'application'", "= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'")
 
 run "mkdir app/webpacker/#{app_name}/images"
-run 'yarn add rails-ujs turbolinks jquery stimulus bourbon bootstrap babili'
+run 'yarn add rails-ujs turbolinks jquery stimulus bourbon bootstrap babili popper.js -D webpack-cli -D'
 # Add popper which is a dependencie of bootstrap.
 # I am not sure why I had to run this step manually
 # to get it to work, but maybe something with a name conflict.
-run 'yarn add popper.js -D webpack-cli -D'
+# run 'yarn add popper.js -D webpack-cli -D'
